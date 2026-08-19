@@ -39,13 +39,15 @@ separate Raspberry Pi Pico W robot car over WiFi.
 
 | File | Purpose |
 |---|---|
-| `voice_car_control_groq.py` | Main app: button -> record -> Groq STT -> match -> send to Pico |
+| `voice_car_control_groq.py` | Main app (runs on the Pi Zero): button -> record -> Groq STT -> match -> send to Pico |
 | `whisplay.py` | Driver for the WhisPlay HAT (LCD/SPI, RGB LED, button, backlight) |
-| `send_command.py` | One-shot CLI: send a single command to the Pico without the HAT/mic at all - used to relay commands typed/spoken to an LLM assistant instead of the physical mic |
+| `send_command.py` | One-shot CLI (runs on the Pi Zero): send a single command to the Pico without the HAT/mic at all - used to relay commands typed/spoken to an LLM assistant instead of the physical mic |
+| `pico/11_WiFi_Control_test_3.py` | MicroPython firmware that runs **on the Pico W itself**: WiFi connect, OLED battery/IP display, and the port-8765 TCP command server that drives the motors |
+| `docs/voice_robot_car_guide_ja.pdf` | Full project overview and step-by-step setup/run guide, in Japanese |
 | `.gitignore` | Excludes the local Vosk model directory, recordings, `__pycache__`, etc. |
 
-The Pico-side firmware (WiFi connect, OLED display, motor control, and the port-8765 TCP command
-server) is a separate MicroPython script that runs on the Pico W itself and isn't part of this repo.
+`pico/11_WiFi_Control_test_3.py` needs to be flashed onto the Pico W separately (e.g. via Thonny or
+`mpremote`) - everything else in this repo runs as regular Python on the Pi Zero.
 
 ## Hardware
 
