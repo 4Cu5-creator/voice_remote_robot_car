@@ -41,10 +41,9 @@ separate Raspberry Pi Pico W robot car over WiFi.
 |---|---|
 | `voice_car_control_groq.py` | Main app (runs on the Pi Zero): button -> record -> Groq STT -> match -> send to Pico |
 | `whisplay.py` | Driver for the WhisPlay HAT (LCD/SPI, RGB LED, button, backlight) |
-| `send_command.py` | One-shot CLI (runs on the Pi Zero): send a single command to the Pico without the HAT/mic at all - used to relay commands typed/spoken to an LLM assistant instead of the physical mic |
 | `pico/11_WiFi_Control_test_3.py` | MicroPython firmware that runs **on the Pico W itself**: WiFi connect, OLED battery/IP display, and the port-8765 TCP command server that drives the motors |
 | `docs/voice_robot_car_guide_ja.pdf` | Full project overview and step-by-step setup/run guide, in Japanese |
-| `.gitignore` | Excludes the local Vosk model directory, recordings, `__pycache__`, etc. |
+| `.gitignore` | Excludes the local Vosk model directory, recordings, `run.sh` (holds a live API key), `send_command.py`, `__pycache__`, etc. |
 
 `pico/11_WiFi_Control_test_3.py` needs to be flashed onto the Pico W separately (e.g. via Thonny or
 `mpremote`) - everything else in this repo runs as regular Python on the Pi Zero.
@@ -92,7 +91,9 @@ separate Raspberry Pi Pico W robot car over WiFi.
 
 ## Controlling it without the mic
 
-If the HAT's mic is inconvenient to talk into, `send_command.py` sends a single command directly:
+If the HAT's mic is inconvenient to talk into, a small local `send_command.py` script (not tracked
+in this repo) can send a single command directly - open a raw socket to `PICO_HOST:PICO_PORT`,
+write the command word plus a newline, read back the reply:
 
 ```bash
 python3 send_command.py forward
