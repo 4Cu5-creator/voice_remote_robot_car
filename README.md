@@ -41,6 +41,7 @@ separate Raspberry Pi Pico W robot car over WiFi.
 |---|---|
 | `voice_car_control_groq.py` | Main app (runs on the Pi Zero): button -> record -> Groq STT -> match -> send to Pico |
 | `whisplay.py` | Driver for the WhisPlay HAT (LCD/SPI, RGB LED, button, backlight) |
+| `install_service.sh` | Installs the app as a systemd service (`sudo ./install_service.sh`) - auto-start on boot, auto-restart on failure |
 | `pico/11_WiFi_Control_test_3.py` | MicroPython firmware that runs **on the Pico W itself**: WiFi connect, OLED battery/IP display, and the port-8765 TCP command server that drives the motors |
 | `docs/voice_robot_car_guide_ja.pdf` | Full project overview and step-by-step setup/run guide, in Japanese |
 | `.gitignore` | Excludes the local Vosk model directory, recordings, `run.sh` (holds a live API key), `send_command.py`, `__pycache__`, etc. |
@@ -85,9 +86,23 @@ separate Raspberry Pi Pico W robot car over WiFi.
    python3 voice_car_control_groq.py
    ```
 
-   Or run it as a systemd service so it starts on boot and restarts on failure - see the service
-   unit used in this project (`voice-car-control.service`, `ExecStart=... run.sh`,
-   `Restart=on-failure`).
+   Or install it as a systemd service so it starts on boot and restarts automatically on failure:
+
+   ```bash
+   sudo ./install_service.sh
+   ```
+
+   This writes and enables `voice-car-control.service` (`Restart=on-failure`, capped at 5 restarts
+   per 60s), running as whichever user invoked `sudo` and pointed at `run.sh` next to it. It
+   requires `run.sh` to already exist (see step 5 above) - the script tells you what to create if
+   it's missing. Once installed:
+
+   ```bash
+   systemctl status voice-car-control.service   # check it's running
+   journalctl -u voice-car-control.service -f   # follow its logs
+   sudo systemctl stop voice-car-control.service  # do this before running the app manually -
+                                                    # otherwise two instances fight over the HAT
+   ```
 
 ## Controlling it without the mic
 
